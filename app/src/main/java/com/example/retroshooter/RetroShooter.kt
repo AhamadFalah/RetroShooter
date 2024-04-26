@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Bundle
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -15,36 +16,36 @@ import android.view.View
 import java.util.*
 
 class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-    var background: Bitmap? = null
-    var lifeImage: Bitmap? = null
-    var gameHandler: Handler? = null // Renamed from 'handler'
-    val UPDATE_MILLIS = 36L
+    private var background: Bitmap? = null
+    private var lifeImage: Bitmap? = null
+    private var gameHandler: Handler? = null
+    private val updateMillis = 36L
 
     companion object {
         var screenWidth: Int = 0
         var screenHeight: Int = 0
     }
 
-    var life = 3
+    private var life = 3
     var points = 0
-    val TEXT_SIZE = 80
-    var paused = false
-    var ourSpaceship: OurSpaceship? = null
-    var enemySpaceship: EnemySpaceship? = null
-    var random: Random? = null
-    var enemyShots: ArrayList<Shot> = ArrayList()
-    var ourShots: ArrayList<Shot> = ArrayList()
-    var enemyExplosion = false
-    var explosion: Explosion? = null
-    var explosions: ArrayList<Explosion> = ArrayList()
-    var enemyShotAction = false
-    var scorePaint: Paint = Paint().apply {
+    private val textSize = 80
+    private var paused = false
+    private var ourSpaceship: OurSpaceship? = null
+    private var enemySpaceship: EnemySpaceship? = null
+    private var random: Random? = null
+    private var enemyShots: ArrayList<Shot> = ArrayList()
+    private var ourShots: ArrayList<Shot> = ArrayList()
+    private var enemyExplosion = false
+    private var explosion: Explosion? = null
+    private var explosions: ArrayList<Explosion> = ArrayList()
+    private var enemyShotAction = false
+    private val scorePaint: Paint = Paint().apply {
         color = Color.RED
-        textSize = TEXT_SIZE.toFloat()
+        textSize = textSize.toFloat()
         textAlign = Paint.Align.LEFT
     }
 
-    val runnable = object : Runnable {
+    private val runnable = object : Runnable {
         override fun run() {
             invalidate()
         }
@@ -61,23 +62,24 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         enemySpaceship = EnemySpaceship(context)
         background = BitmapFactory.decodeResource(context.resources, R.drawable.background)
         lifeImage = BitmapFactory.decodeResource(context.resources, R.drawable.heart)
-        gameHandler = Handler() // Renamed from 'handler'
+        gameHandler = Handler()
     }
 
     override fun onDraw(canvas: Canvas) {
         background?.let {
             canvas.drawBitmap(it, 0f, 0f, null)
         }
-        canvas.drawText("Pt: $points", 0f, TEXT_SIZE.toFloat(), scorePaint)
+        canvas.drawText("Pt: $points", 0f, textSize.toFloat(), scorePaint)
         for (i in life downTo 1) {
             lifeImage?.let {
-                canvas.drawBitmap(it, screenWidth - it.width * i.toFloat(), 0f, null)
+                canvas.drawBitmap(it, (screenWidth - it.width * i).toFloat(), 0f, null)
             }
         }
         if (life == 0) {
             paused = true
-            gameHandler = null // Changed from 'handler'
+            gameHandler = null
             val intent = Intent(context, GameOver::class.java)
+            intent.putExtra("points", points)
             context.startActivity(intent)
             (context as Activity).finish()
         }
@@ -100,7 +102,7 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         }
 
         if (!paused) {
-            handler?.postDelayed(runnable, UPDATE_MILLIS)
+            gameHandler?.postDelayed(runnable, updateMillis)
         }
         if (!enemyExplosion) {
             enemySpaceship?.getEnemySpaceshipBitmap()?.let { enemyBitmap ->
@@ -108,7 +110,7 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
             }
         }
 
-        if (ourSpaceship!!.isAlive) {
+        if (ourSpaceship?.isAlive == true) {
             if (ourSpaceship!!.ox > screenWidth - ourSpaceship!!.getOurSpaceshipWidth()) {
                 ourSpaceship!!.ox = screenWidth - ourSpaceship!!.getOurSpaceshipWidth()
             } else if (ourSpaceship!!.ox < 0) {
@@ -145,7 +147,7 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
             ourShots[i].getShot()?.let {
                 canvas.drawBitmap(it, ourShots[i].shx.toFloat(), ourShots[i].shy.toFloat(), null)
             }
-            if ((ourShots[i].shx >= enemySpaceship!!.ex) && (ourShots[i].shx <= enemySpaceship!!.ex + enemySpaceship!!.getEnemySpaceshipWidth()) && (ourShots[i].shy <= enemySpaceship!!.getEnemySpaceshipHeight()) && (ourShots[i].shy >= enemySpaceship!!.ey)) {
+            if ((ourShots[i].shx >= enemySpaceship!!.ex) && (ourShots[i].shx <= enemySpaceship!!.ex + enemySpaceship!!.getEnemySpaceshipWidth()) && (ourShots[i].shy <= enemySpaceship!!.ey + enemySpaceship!!.getEnemySpaceshipHeight()) && (ourShots[i].shy >= enemySpaceship!!.ey)) {
                 points++
                 ourShots.removeAt(i)
                 explosion = Explosion(context, enemySpaceship!!.ex, enemySpaceship!!.ey)
@@ -169,9 +171,6 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         }
     }
 
-
-
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val touchX = event.x.toInt()
         when (event.action) {
@@ -182,7 +181,7 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
                 }
             }
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                ourSpaceship!!.ox = touchX
+                ourSpaceship?.ox = touchX
             }
         }
         return true

@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.example.retroshooter.RetroShooter
+        android:id="@+id/retroShooter"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/start"
-        android:onClick="startGame" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/start"
+            android:onClick="startGame" />
 
     </LinearLayout>
 
@@ -22,10 +28,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:onClick="startGame"
         android:text="Play"
         android:textColor="#330022"
-        android:textSize="20sp"
-        android:onClick="startGame" />
-
+        android:textSize="20sp" />
 
 </LinearLayout>

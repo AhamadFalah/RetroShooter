@@ -3,15 +3,14 @@ package com.example.retroshooter
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import java.util.*
+import java.util.Random
 
 class OurSpaceship(context: Context) {
-    var ourSpaceship: Bitmap? = null
+    private var ourSpaceship: Bitmap? = null
     var oy = 0
     var ox = 0
-    var ourVelocity = 0
     var isAlive = true
-    var random: Random
+    private var random: Random
 
     init {
         ourSpaceship = BitmapFactory.decodeResource(context.resources, R.drawable.rocket)
@@ -34,6 +33,5 @@ class OurSpaceship(context: Context) {
     private fun resetOurSpaceship() {
         ox = 200 + random.nextInt(RetroShooter.screenWidth)
         oy = RetroShooter.screenHeight - getOurSpaceshipHeight()
-        ourVelocity = 10 + random.nextInt(6)
     }
 }

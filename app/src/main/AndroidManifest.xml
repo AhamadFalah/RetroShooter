@@ -23,15 +23,20 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".NameEntryActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".Leaderboard"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".StartUp"
             android:exported="true"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".GameOver"
             android:exported="true"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape" />
+
     </application>
 
 </manifest>
