@@ -7,16 +7,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
-import android.os.Bundle
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import java.util.*
 
 class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
     private var background: Bitmap? = null
+    private var scaledBackground: Bitmap? = null
     private var lifeImage: Bitmap? = null
     private var gameHandler: Handler? = null
     private val updateMillis = 36L
@@ -41,9 +43,13 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
     private var enemyShotAction = false
     private val scorePaint: Paint = Paint().apply {
         color = Color.RED
-        textSize = textSize.toFloat()
+        textSize = 75F
         textAlign = Paint.Align.LEFT
+        val customTypeface = ResourcesCompat.getFont(context, R.font.retropix)
+        typeface = customTypeface
     }
+
+    private var increaseShootingFrequencyAt = 10 // Initial points threshold
 
     private val runnable = object : Runnable {
         override fun run() {
@@ -63,10 +69,20 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         background = BitmapFactory.decodeResource(context.resources, R.drawable.background)
         lifeImage = BitmapFactory.decodeResource(context.resources, R.drawable.heart)
         gameHandler = Handler()
+
+        // Scale the background image to fit the screen
+        val backgroundWidth = background?.width ?: 0
+        val backgroundHeight = background?.height ?: 0
+        val scaleX = screenWidth.toFloat() / backgroundWidth
+        val scaleY = screenHeight.toFloat() / backgroundHeight
+        val matrix = Matrix().apply {
+            postScale(scaleX, scaleY)
+        }
+        scaledBackground = Bitmap.createBitmap(background!!, 0, 0, backgroundWidth, backgroundHeight, matrix, true)
     }
 
     override fun onDraw(canvas: Canvas) {
-        background?.let {
+        scaledBackground?.let {
             canvas.drawBitmap(it, 0f, 0f, null)
         }
         canvas.drawText("Pt: $points", 0f, textSize.toFloat(), scorePaint)
@@ -75,13 +91,13 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
                 canvas.drawBitmap(it, (screenWidth - it.width * i).toFloat(), 0f, null)
             }
         }
+
         if (life == 0) {
             paused = true
             gameHandler = null
             val intent = Intent(context, GameOver::class.java)
             intent.putExtra("points", points)
             context.startActivity(intent)
-            (context as Activity).finish()
         }
 
         enemySpaceship?.let { enemyShip ->
@@ -94,11 +110,17 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
                 enemyShip.enemyVelocity *= -1
             }
 
-            if (!enemyShotAction && (enemyShip.ex >= 200 + random!!.nextInt(400))) {
+            if (!enemyShotAction && (enemyShip.ex >= 200 + random!!.nextInt(400 - points / increaseShootingFrequencyAt * 100))) {
                 val enemyShot = Shot(context, enemyShip.ex + enemyShip.getEnemySpaceshipWidth() / 2, enemyShip.ey)
                 enemyShots.add(enemyShot)
                 enemyShotAction = true
             }
+        }
+
+        if (points % increaseShootingFrequencyAt == 0) {
+            increaseShootingFrequencyAt += 10 // Adjust this value as needed
+            enemySpaceship?.increaseShootingFrequency()
+            enemySpaceship?.increaseSpeed()
         }
 
         if (!paused) {
@@ -149,6 +171,9 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
             }
             if ((ourShots[i].shx >= enemySpaceship!!.ex) && (ourShots[i].shx <= enemySpaceship!!.ex + enemySpaceship!!.getEnemySpaceshipWidth()) && (ourShots[i].shy <= enemySpaceship!!.ey + enemySpaceship!!.getEnemySpaceshipHeight()) && (ourShots[i].shy >= enemySpaceship!!.ey)) {
                 points++
+                if (points % increaseShootingFrequencyAt == 0) {
+                    increaseShootingFrequencyAt += 10 // Adjust this value as needed
+                }
                 ourShots.removeAt(i)
                 explosion = Explosion(context, enemySpaceship!!.ex, enemySpaceship!!.ey)
                 explosions.add(explosion!!)

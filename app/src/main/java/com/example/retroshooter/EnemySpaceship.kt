@@ -11,11 +11,23 @@ class EnemySpaceship(context: Context) {
     var ex = 0
     var enemyVelocity = 0
     private var random: Random
+    private var shootingFrequency = 400 // Initial shooting frequency (higher value means lower frequency)
+    private var speed = 5 // Initial speed
+
+
 
     init {
         enemySpaceship = BitmapFactory.decodeResource(context.resources, R.drawable.alien)
         random = Random()
         resetEnemySpaceship()
+    }
+
+    fun increaseShootingFrequency() {
+        shootingFrequency -= 50 // Decrease the shooting frequency (increase the rate of shooting)
+    }
+
+    fun increaseSpeed() {
+        speed += 2 // Increase the speed of the enemy spaceship
     }
 
     fun getEnemySpaceshipBitmap(): Bitmap? {

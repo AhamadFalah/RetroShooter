@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:gravity="center">
 
-    <com.example.retroshooter.RetroShooter
-        android:id="@+id/retroShooter"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <ImageView
+        android:layout_width="336dp"
+        android:layout_height="164dp"
+        android:background="@drawable/logo" />
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="338dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/retropix"
+            android:hint="@string/enter_your_name"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/retropix"
+        android:includeFontPadding="false"
+        android:onClick="startGame"
+        android:text="Start Game"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -24,13 +51,5 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:onClick="startGame"
-        android:text="Play"
-        android:textColor="#330022"
-        android:textSize="20sp" />
 
 </LinearLayout>

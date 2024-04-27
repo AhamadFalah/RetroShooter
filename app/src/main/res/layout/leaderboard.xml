@@ -5,20 +5,40 @@
     android:background="@drawable/background"
     android:orientation="vertical"
     android:padding="16dp">
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Leaderboard"
-        android:textColor="#330022"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/home_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:contentDescription="@string/home"
+            android:fontFamily="@font/retropix"
+            android:onClick="back"
+            android:text="@string/home" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/retropix"
+            android:text="Leaderboard"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/lvLeaderboard"
         android:layout_width="match_parent"
+        android:background="@color/white"
+        android:textColor="@color/white"
+        android:fontFamily="@font/retropix"
+        android:padding="8dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_weight="1" />
-
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:foregroundTint="@color/white" />
 </LinearLayout>
