@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:fontFamily="@font/retropix"
-            android:text="Leaderboard"
+            android:text="@string/Leaderboard"
             android:textColor="@color/white"
             android:textSize="24sp"
             android:textStyle="bold" />

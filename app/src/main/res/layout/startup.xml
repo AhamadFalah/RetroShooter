@@ -35,7 +35,7 @@
         android:fontFamily="@font/retropix"
         android:includeFontPadding="false"
         android:onClick="startGame"
-        android:text="Start Game"
+        android:text="@string/start_game"
         android:textColor="@color/white"
         android:textSize="20sp" />
 

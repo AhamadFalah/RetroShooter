@@ -32,15 +32,15 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
     var points = 0
     private val textSize = 80
     private var paused = false
-    private var ourSpaceship: OurSpaceship? = null
-    private var enemySpaceship: EnemySpaceship? = null
+    private var playerRocket: PlayerRocket? = null
+    private var alienSpacecraft: AlienSpacecraft? = null
     private var random: Random? = null
-    private var enemyShots: ArrayList<Shot> = ArrayList()
+    private var alienShots: ArrayList<Shot> = ArrayList()
     private var ourShots: ArrayList<Shot> = ArrayList()
     private var enemyExplosion = false
     private var explosion: Explosion? = null
     private var explosions: ArrayList<Explosion> = ArrayList()
-    private var enemyShotAction = false
+    private var alienShotAction = false
     private val scorePaint: Paint = Paint().apply {
         color = Color.RED
         textSize = 75F
@@ -64,8 +64,8 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         display.getSize(size)
         screenWidth = size.x
         screenHeight = size.y
-        ourSpaceship = OurSpaceship(context)
-        enemySpaceship = EnemySpaceship(context)
+        playerRocket = PlayerRocket(context)
+        alienSpacecraft = AlienSpacecraft(context)
         background = BitmapFactory.decodeResource(context.resources, R.drawable.background)
         lifeImage = BitmapFactory.decodeResource(context.resources, R.drawable.heart)
         gameHandler = Handler()
@@ -100,65 +100,65 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
             context.startActivity(intent)
         }
 
-        enemySpaceship?.let { enemyShip ->
-            enemyShip.ex += enemyShip.enemyVelocity
-            if (enemyShip.ex + enemyShip.getEnemySpaceshipWidth() >= screenWidth) {
-                enemyShip.enemyVelocity *= -1
+        alienSpacecraft?.let { alienSpaceCraft ->
+            alienSpaceCraft.ex += alienSpaceCraft.alienVelocity
+            if (alienSpaceCraft.ex + alienSpaceCraft.getAlienSpacecraftWidth() >= screenWidth) {
+                alienSpaceCraft.alienVelocity *= -1
             }
 
-            if (enemyShip.ex <= 0) {
-                enemyShip.enemyVelocity *= -1
+            if (alienSpaceCraft.ex <= 0) {
+                alienSpaceCraft.alienVelocity *= -1
             }
 
-            if (!enemyShotAction && (enemyShip.ex >= 200 + random!!.nextInt(400 - points / increaseShootingFrequencyAt * 100))) {
-                val enemyShot = Shot(context, enemyShip.ex + enemyShip.getEnemySpaceshipWidth() / 2, enemyShip.ey)
-                enemyShots.add(enemyShot)
-                enemyShotAction = true
+            if (!alienShotAction && (alienSpaceCraft.ex >= 200 + random!!.nextInt(400 - points / increaseShootingFrequencyAt * 100))) {
+                val enemyShot = Shot(context, alienSpaceCraft.ex + alienSpaceCraft.getAlienSpacecraftWidth() / 2, alienSpaceCraft.ey)
+                alienShots.add(enemyShot)
+                alienShotAction = true
             }
         }
 
         if (points % increaseShootingFrequencyAt == 0) {
             increaseShootingFrequencyAt += 10 // Adjust this value as needed
-            enemySpaceship?.increaseShootingFrequency()
-            enemySpaceship?.increaseSpeed()
+            alienSpacecraft?.increaseShootingFrequency()
+            alienSpacecraft?.increaseSpeed()
         }
 
         if (!paused) {
             gameHandler?.postDelayed(runnable, updateMillis)
         }
         if (!enemyExplosion) {
-            enemySpaceship?.getEnemySpaceshipBitmap()?.let { enemyBitmap ->
-                canvas.drawBitmap(enemyBitmap, enemySpaceship!!.ex.toFloat(), enemySpaceship!!.ey.toFloat(), null)
+            alienSpacecraft?.getAlienSpacecraftBitmap()?.let { enemyBitmap ->
+                canvas.drawBitmap(enemyBitmap, alienSpacecraft!!.ex.toFloat(), alienSpacecraft!!.ey.toFloat(), null)
             }
         }
 
-        if (ourSpaceship?.isAlive == true) {
-            if (ourSpaceship!!.ox > screenWidth - ourSpaceship!!.getOurSpaceshipWidth()) {
-                ourSpaceship!!.ox = screenWidth - ourSpaceship!!.getOurSpaceshipWidth()
-            } else if (ourSpaceship!!.ox < 0) {
-                ourSpaceship!!.ox = 0
+        if (playerRocket?.isAlive == true) {
+            if (playerRocket!!.ox > screenWidth - playerRocket!!.getPlayerRocketWidth()) {
+                playerRocket!!.ox = screenWidth - playerRocket!!.getPlayerRocketWidth()
+            } else if (playerRocket!!.ox < 0) {
+                playerRocket!!.ox = 0
             }
-            ourSpaceship?.getOurSpaceshipBitmap()?.let { ourBitmap ->
-                canvas.drawBitmap(ourBitmap, ourSpaceship!!.ox.toFloat(), ourSpaceship!!.oy.toFloat(), null)
+            playerRocket?.getPlayerRocketBitmap()?.let { ourBitmap ->
+                canvas.drawBitmap(ourBitmap, playerRocket!!.ox.toFloat(), playerRocket!!.oy.toFloat(), null)
             }
         }
 
         var i = 0
-        while (i < enemyShots.size) {
-            enemyShots[i].shy += 15
-            enemyShots[i].getShot()?.let {
-                canvas.drawBitmap(it, enemyShots[i].shx.toFloat(), enemyShots[i].shy.toFloat(), null)
+        while (i < alienShots.size) {
+            alienShots[i].shy += 15
+            alienShots[i].getShot()?.let {
+                canvas.drawBitmap(it, alienShots[i].shx.toFloat(), alienShots[i].shy.toFloat(), null)
             }
-            if ((enemyShots[i].shx >= ourSpaceship!!.ox) && (enemyShots[i].shx <= ourSpaceship!!.ox + ourSpaceship!!.getOurSpaceshipWidth()) && (enemyShots[i].shy >= ourSpaceship!!.oy) && (enemyShots[i].shy <= screenHeight)) {
+            if ((alienShots[i].shx >= playerRocket!!.ox) && (alienShots[i].shx <= playerRocket!!.ox + playerRocket!!.getPlayerRocketWidth()) && (alienShots[i].shy >= playerRocket!!.oy) && (alienShots[i].shy <= screenHeight)) {
                 life--
-                enemyShots.removeAt(i)
-                explosion = Explosion(context, ourSpaceship!!.ox, ourSpaceship!!.oy)
+                alienShots.removeAt(i)
+                explosion = Explosion(context, playerRocket!!.ox, playerRocket!!.oy)
                 explosions.add(explosion!!)
-            } else if (enemyShots[i].shy >= screenHeight) {
-                enemyShots.removeAt(i)
+            } else if (alienShots[i].shy >= screenHeight) {
+                alienShots.removeAt(i)
             }
-            if (enemyShots.isEmpty()) {
-                enemyShotAction = false
+            if (alienShots.isEmpty()) {
+                alienShotAction = false
             }
             i++
         }
@@ -169,13 +169,13 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
             ourShots[i].getShot()?.let {
                 canvas.drawBitmap(it, ourShots[i].shx.toFloat(), ourShots[i].shy.toFloat(), null)
             }
-            if ((ourShots[i].shx >= enemySpaceship!!.ex) && (ourShots[i].shx <= enemySpaceship!!.ex + enemySpaceship!!.getEnemySpaceshipWidth()) && (ourShots[i].shy <= enemySpaceship!!.ey + enemySpaceship!!.getEnemySpaceshipHeight()) && (ourShots[i].shy >= enemySpaceship!!.ey)) {
+            if ((ourShots[i].shx >= alienSpacecraft!!.ex) && (ourShots[i].shx <= alienSpacecraft!!.ex + alienSpacecraft!!.getAlienSpacecraftWidth()) && (ourShots[i].shy <= alienSpacecraft!!.ey + alienSpacecraft!!.getAlienSpacecraftHeight()) && (ourShots[i].shy >= alienSpacecraft!!.ey)) {
                 points++
                 if (points % increaseShootingFrequencyAt == 0) {
                     increaseShootingFrequencyAt += 10 // Adjust this value as needed
                 }
                 ourShots.removeAt(i)
-                explosion = Explosion(context, enemySpaceship!!.ex, enemySpaceship!!.ey)
+                explosion = Explosion(context, alienSpacecraft!!.ex, alienSpacecraft!!.ey)
                 explosions.add(explosion!!)
             } else if (ourShots[i].shy <= 0) {
                 ourShots.removeAt(i)
@@ -201,12 +201,12 @@ class RetroShooter(context: Context, attrs: AttributeSet? = null) : View(context
         when (event.action) {
             MotionEvent.ACTION_UP -> {
                 if (ourShots.size < 3) {
-                    val ourShot = Shot(context, ourSpaceship!!.ox + ourSpaceship!!.getOurSpaceshipWidth() / 2, ourSpaceship!!.oy)
+                    val ourShot = Shot(context, playerRocket!!.ox + playerRocket!!.getPlayerRocketWidth() / 2, playerRocket!!.oy)
                     ourShots.add(ourShot)
                 }
             }
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                ourSpaceship?.ox = touchX
+                playerRocket?.ox = touchX
             }
         }
         return true

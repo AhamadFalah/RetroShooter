@@ -5,11 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.util.Random
 
-class EnemySpaceship(context: Context) {
-    private var enemySpaceship: Bitmap? = null
+class AlienSpacecraft(context: Context) {
+    private var alienSpacecraft: Bitmap? = null
     var ey = 0
     var ex = 0
-    var enemyVelocity = 0
+    var alienVelocity = 0
     private var random: Random
     private var shootingFrequency = 400 // Initial shooting frequency (higher value means lower frequency)
     private var speed = 5 // Initial speed
@@ -17,7 +17,7 @@ class EnemySpaceship(context: Context) {
 
 
     init {
-        enemySpaceship = BitmapFactory.decodeResource(context.resources, R.drawable.alien)
+        alienSpacecraft = BitmapFactory.decodeResource(context.resources, R.drawable.alien)
         random = Random()
         resetEnemySpaceship()
     }
@@ -30,21 +30,21 @@ class EnemySpaceship(context: Context) {
         speed += 2 // Increase the speed of the enemy spaceship
     }
 
-    fun getEnemySpaceshipBitmap(): Bitmap? {
-        return enemySpaceship
+    fun getAlienSpacecraftBitmap(): Bitmap? {
+        return alienSpacecraft
     }
 
-    fun getEnemySpaceshipWidth(): Int {
-        return enemySpaceship?.width ?: 0
+    fun getAlienSpacecraftWidth(): Int {
+        return alienSpacecraft?.width ?: 0
     }
 
-    fun getEnemySpaceshipHeight(): Int {
-        return enemySpaceship?.height ?: 0
+    fun getAlienSpacecraftHeight(): Int {
+        return alienSpacecraft?.height ?: 0
     }
 
     private fun resetEnemySpaceship() {
         ex = 200 + random.nextInt(400)
         ey = 0
-        enemyVelocity = 14 + random.nextInt(10)
+        alienVelocity = 14 + random.nextInt(10)
     }
 }
